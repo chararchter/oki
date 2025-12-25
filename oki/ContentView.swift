@@ -153,6 +153,10 @@ struct TimerView: View {
     // The timer will update remainingSeconds every second
     @State private var timer: Timer?
 
+    // Tracks whether the timer is paused
+    // iOS best practice: Use a single boolean state for play/pause toggle
+    @State private var isPaused: Bool = false
+
     // Environment value to dismiss this view (go back to ContentView)
     @Environment(\.dismiss) private var dismiss
 
@@ -167,7 +171,20 @@ struct TimerView: View {
                 .foregroundColor(.black)
                 .monospacedDigit()  // Keeps digits the same width
 
-            // Optional: Show progress or other controls here
+            // MARK: - Pause/Play Button
+
+            // iOS best practice: Use SF Symbols for system icons
+            // Single button that toggles between pause and play states
+            Button(action: {
+                togglePauseResume()
+            }) {
+                Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(.white)
+                    .frame(width: 80, height: 80)
+                    .background(Color.blue)
+                    .clipShape(Circle())
+            }
         }
         .padding()
         .navigationBarBackButtonHidden(false)  // Show back button to return to duration picker
@@ -192,9 +209,11 @@ struct TimerView: View {
         // Create a timer that fires every 1 second
         // Timer.publish creates a publisher that emits events on a schedule
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            if remainingSeconds > 0 {
+            // Only decrement if not paused
+            // iOS best practice: Check state before modifying
+            if !isPaused && remainingSeconds > 0 {
                 remainingSeconds -= 1  // Decrease by 1 second
-            } else {
+            } else if remainingSeconds == 0 {
                 // Timer finished - stop the timer
                 stopTimer()
                 // Optional: Add sound, haptic feedback, or dismiss view
@@ -206,6 +225,14 @@ struct TimerView: View {
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+
+    // Toggles between pause and resume states
+    // iOS best practice: Single function for toggle behavior
+    private func togglePauseResume() {
+        isPaused.toggle()  // Flip the boolean: true -> false, false -> true
+        // Timer continues running but checks isPaused before decrementing
+        // This is more efficient than stopping/starting timer
     }
 
     // Formats remainingSeconds into MM:SS or HH:MM:SS string
