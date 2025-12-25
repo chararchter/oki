@@ -208,15 +208,21 @@ struct TimerView: View {
         timer = nil
     }
 
-    // Formats remainingSeconds into HH:MM:SS string
+    // Formats remainingSeconds into MM:SS or HH:MM:SS string
     // This computed property recalculates whenever remainingSeconds changes
     private var formattedTime: String {
         let hours = remainingSeconds / 3600  // 3600 seconds in an hour
         let minutes = (remainingSeconds % 3600) / 60  // Remaining seconds / 60
         let seconds = remainingSeconds % 60  // Leftover seconds
 
-        // Format with leading zeros: 02:15:30
-        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        // Conditional formatting:
+        // If hours == 0: show MM:SS (e.g., "05:30")
+        // If hours > 0: show HH:MM:SS (e.g., "02:05:30")
+        if hours == 0 {
+            return String(format: "%02d:%02d", minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        }
     }
 }
 
