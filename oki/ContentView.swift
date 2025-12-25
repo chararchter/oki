@@ -113,12 +113,12 @@ struct ContentView: View {
                 Button(action: {
                     showingTimer = true
                 }) {
-                    Text("Start")
+                    Text("start")
                         .font(.title2)
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
-                        .frame(width: 200, height: 200)  // Makes it a large round button
-                        .background(Color.blue)
+                        .frame(width: 100, height: 100)  // Makes it a large round button
+                        .background(Color.red)
                         .clipShape(Circle())  // Makes it perfectly round
                 }
                 .padding(.top, 30)  // Add space between wheels and button
@@ -164,7 +164,7 @@ struct TimerView: View {
             // This updates every second as the timer counts down
             Text(formattedTime)
                 .font(.system(size: 80, weight: .bold, design: .rounded))
-                .foregroundColor(.blue)
+                .foregroundColor(.black)
                 .monospacedDigit()  // Keeps digits the same width
 
             // Optional: Show progress or other controls here
