@@ -393,21 +393,26 @@ struct TimerView: View {
         guard let soundFileName = bellOption.soundFileName else { return }
 
         // Try to find the sound file in the bundle
-        // Supports both .mp3 and .wav formats
-        if let soundURL = Bundle.main.url(forResource: soundFileName, withExtension: "mp3") ??
-                          Bundle.main.url(forResource: soundFileName, withExtension: "wav") {
-            do {
-                // Create audio player with the sound file
-                audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
-                audioPlayer?.play()
-            } catch {
-                // If sound fails to play, fail silently (graceful degradation)
-                print("Could not play sound: \(error.localizedDescription)")
+        // Supports multiple audio formats (prioritizing lossless)
+        // Order: AIFF → WAV → ALAC → FLAC → MP3
+        let formats = ["aiff", "aif", "wav", "m4a", "flac", "mp3"]
+
+        for format in formats {
+            if let soundURL = Bundle.main.url(forResource: soundFileName, withExtension: format) {
+                do {
+                    // Create audio player with the sound file
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                    audioPlayer?.play()
+                    return  // Successfully loaded and playing
+                } catch {
+                    // If this format fails, try next format
+                    print("Could not play \(format) format: \(error.localizedDescription)")
+                }
             }
-        } else {
-            // Sound file not found in bundle
-            print("Sound file '\(soundFileName)' not found in bundle")
         }
+
+        // No supported format found in bundle
+        print("Sound file '\(soundFileName)' not found in any supported format")
     }
 
     // Formats remainingSeconds into MM:SS or HH:MM:SS string
