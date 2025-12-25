@@ -76,7 +76,7 @@ struct ContentView: View {
                         }
                     }
                     .pickerStyle(.wheel)
-                    .frame(width: 100, height: 150)  // width: 100 gives enough room for 2-digit numbers
+                    .frame(width: 100, height: 150)
                     .clipped()
                 }
 
@@ -87,9 +87,9 @@ struct ContentView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    // Seconds Picker: 0-59
+                    // Seconds Picker: 0, 10, 20, 30, 40, 50
                     Picker("Seconds", selection: $selectedSeconds) {
-                        ForEach(0...59, id: \.self) { second in
+                        ForEach(Array(stride(from: 0, through: 50, by: 10)), id: \.self) { second in
                             Text("\(second)")
                                 .font(.title)
                                 .tag(second)
