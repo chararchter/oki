@@ -7,6 +7,26 @@
 
 import SwiftUI
 import SwiftData
+import UIKit  // For haptic feedback
+
+// MARK: - Bell Option Enum
+
+// Enum for starting bell options
+// iOS best practice: Use enums for mutually exclusive states
+enum BellOption: String, CaseIterable {
+    case none = "None"
+    case vibrate = "Vibrate"
+
+    // SF Symbol icon for each option
+    var icon: String {
+        switch self {
+        case .none:
+            return "speaker.slash.fill"
+        case .vibrate:
+            return "bell.fill"
+        }
+    }
+}
 
 struct ContentView: View {
     // MARK: - State Properties
@@ -21,6 +41,9 @@ struct ContentView: View {
 
     @State private var selectedSeconds: Int = 0
 
+    // Bell option state - controls whether to vibrate when timer completes
+    @State private var selectedBellOption: BellOption = .none
+
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
 
@@ -31,6 +54,34 @@ struct ContentView: View {
         NavigationStack {
             // VStack arranges views vertically (top to bottom)
             VStack(spacing: 20) {
+                // MARK: - Starting Bell Section
+
+                Text("Starting bell")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+
+                // HStack for the two bell options
+                HStack(spacing: 30) {
+                    // Silent/None option
+                    BellOptionButton(
+                        option: .none,
+                        isSelected: selectedBellOption == .none
+                    ) {
+                        selectedBellOption = .none
+                    }
+
+                    // Vibrate option
+                    BellOptionButton(
+                        option: .vibrate,
+                        isSelected: selectedBellOption == .vibrate
+                    ) {
+                        selectedBellOption = .vibrate
+                    }
+                }
+                .padding(.bottom, 20)
+
+                // MARK: - Duration Section
+
                 // Title to show what we're selecting
                 Text("Duration")
                     .font(.title2)
@@ -129,9 +180,43 @@ struct ContentView: View {
                 TimerView(
                     hours: selectedHours,
                     minutes: selectedMinutes,
-                    seconds: selectedSeconds
+                    seconds: selectedSeconds,
+                    bellOption: selectedBellOption
                 )
             }
+        }
+    }
+}
+
+// MARK: - Bell Option Button
+
+// Reusable button component for bell options
+// iOS best practice: Extract reusable UI components
+struct BellOptionButton: View {
+    let option: BellOption
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                // SF Symbol icon
+                Image(systemName: option.icon)
+                    .font(.system(size: 30))
+                    .foregroundColor(isSelected ? .blue : .gray)
+
+                // Option label
+                Text(option.rawValue)
+                    .font(.caption)
+                    .foregroundColor(isSelected ? .blue : .gray)
+            }
+            .frame(width: 100, height: 80)
+            .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+            )
         }
     }
 }
@@ -144,6 +229,7 @@ struct TimerView: View {
     let hours: Int
     let minutes: Int
     let seconds: Int
+    let bellOption: BellOption
 
     // State for the countdown
     // @State lets us modify these values as the timer counts down
@@ -216,7 +302,13 @@ struct TimerView: View {
             } else if remainingSeconds == 0 {
                 // Timer finished - stop the timer
                 stopTimer()
-                // Optional: Add sound, haptic feedback, or dismiss view
+
+                // Trigger haptic feedback if vibrate option is selected
+                // iOS best practice: Use UINotificationFeedbackGenerator for completion events
+                if bellOption == .vibrate {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(.success)
+                }
             }
         }
     }
