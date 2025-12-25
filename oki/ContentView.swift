@@ -73,20 +73,11 @@ struct ContentView: View {
         .padding()  // Adds spacing around the entire VStack
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
-    }
+    // MARK: - No helper functions needed yet
+    // When we add timer functionality, we'll add functions here like:
+    // - startTimer()
+    // - stopTimer()
+    // - resetTimer()
 }
 
 #Preview {
