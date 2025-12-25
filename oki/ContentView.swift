@@ -17,7 +17,7 @@ struct ContentView: View {
 
     @State private var selectedHours: Int = 0
 
-    @State private var selectedMinutes: Int = 2
+    @State private var selectedMinutes: Int = 10
 
     @State private var selectedSeconds: Int = 0
 
@@ -67,16 +67,17 @@ struct ContentView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    // Minutes Picker: 0-59
+                    // Minutes Picker: 0, 10, 20, 30, 40, 50
+                    // Using stride to create increments of 10 instead of every value
                     Picker("Minutes", selection: $selectedMinutes) {
-                        ForEach(0...59, id: \.self) { minute in
+                        ForEach(Array(stride(from: 0, through: 50, by: 10)), id: \.self) { minute in
                             Text("\(minute)")
                                 .font(.title)
                                 .tag(minute)
                         }
                     }
                     .pickerStyle(.wheel)
-                    .frame(width: 100, height: 150)  // width: 100 gives enough room for 2-digit numbers
+                    .frame(width: 100, height: 150)
                     .clipped()
                 }
 
