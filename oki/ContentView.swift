@@ -93,7 +93,7 @@ struct ContentView: View {
             VStack(spacing: 20) {
                 // MARK: - Dark Mode Toggle
 
-                // HStack to position toggle at the top
+                // HStack to center toggle at the top
                 HStack {
                     Spacer()
 
@@ -115,7 +115,8 @@ struct ContentView: View {
                             .foregroundColor(isDarkMode ? .blue : .gray)
                             .font(.system(size: 18))
                     }
-                    .padding(.trailing, 10)
+
+                    Spacer()
                 }
                 .padding(.top, 10)
 
