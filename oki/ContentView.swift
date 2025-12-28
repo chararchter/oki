@@ -375,8 +375,9 @@ struct TimerView: View {
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
 
-                case .sound:
-                    // Play sound file
+                case .sound, .kru:
+                    // Play sound file (works for both bell-sound and kru-sound)
+                    // The playSound() function uses bellOption.soundFileName to get the right file
                     playSound()
 
                 case .none:
