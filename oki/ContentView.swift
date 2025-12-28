@@ -17,7 +17,7 @@ import AVFoundation  // For audio playback
 enum BellOption: String, CaseIterable {
     case none = "None"
     case vibrate = "Vibrate"
-    case sound = "Bell"
+    case bell = "Bell"
     case kru = "Kru"
 
     // Icon name for each option
@@ -28,7 +28,7 @@ enum BellOption: String, CaseIterable {
             return "speaker.slash.fill"
         case .vibrate:
             return "bell.fill"
-        case .sound:
+        case .bell:
             return "bell-icon"  // Custom image name - add bell-icon.png to Assets.xcassets
         case .kru:
             return "kru-icon"   // Custom image name - add kru-icon.png to Assets.xcassets
@@ -41,7 +41,7 @@ enum BellOption: String, CaseIterable {
         switch self {
         case .none, .vibrate:
             return false  // SF Symbols
-        case .sound, .kru:
+        case .bell, .kru:
             return true   // Custom images from Assets
         }
     }
@@ -50,7 +50,7 @@ enum BellOption: String, CaseIterable {
     // Add to Xcode project bundle
     var soundFileName: String? {
         switch self {
-        case .sound:
+        case .bell:
             return "bell-sound"  // Will look for bell-sound.aiff/wav/etc
         case .kru:
             return "kru-sound"   // Will look for kru-sound.aiff/wav/etc
@@ -113,10 +113,10 @@ struct ContentView: View {
 
                     // Bell sound option
                     BellOptionButton(
-                        option: .sound,
-                        isSelected: selectedBellOption == .sound
+                        option: .bell,
+                        isSelected: selectedBellOption == .bell
                     ) {
-                        selectedBellOption = .sound
+                        selectedBellOption = .bell
                     }
 
                     // Kru sound option
@@ -375,7 +375,7 @@ struct TimerView: View {
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
 
-                case .sound, .kru:
+                case .bell, .kru:
                     // Play sound file (works for both bell-sound and kru-sound)
                     // The playSound() function uses bellOption.soundFileName to get the right file
                     playSound()
