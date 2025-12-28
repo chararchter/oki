@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import UIKit  // For haptic feedback
+import AVFoundation  // For audio playback
 
 // MARK: - Bell Option Enum
 
@@ -16,14 +17,40 @@ import UIKit  // For haptic feedback
 enum BellOption: String, CaseIterable {
     case none = "None"
     case vibrate = "Vibrate"
+    case sound = "Sound"
 
-    // SF Symbol icon for each option
-    var icon: String {
+    // Icon name for each option
+    // Can be SF Symbol name OR custom image name from Assets
+    var iconName: String {
         switch self {
         case .none:
             return "speaker.slash.fill"
         case .vibrate:
             return "bell.fill"
+        case .sound:
+            return "bell-icon"  // Custom image name - add bell-icon.png to Assets.xcassets
+        }
+    }
+
+    // Indicates whether this icon is a custom image (not SF Symbol)
+    // iOS best practice: Separate custom assets from system symbols
+    var isCustomIcon: Bool {
+        switch self {
+        case .none, .vibrate:
+            return false  // SF Symbols
+        case .sound:
+            return true   // Custom image from Assets
+        }
+    }
+
+    // Sound file name (without extension)
+    // Add to Xcode project bundle
+    var soundFileName: String? {
+        switch self {
+        case .sound:
+            return "bell-sound"  // Will look for bell-sound.mp3 or bell-sound.wav
+        default:
+            return nil
         }
     }
 }
@@ -60,8 +87,8 @@ struct ContentView: View {
                     .font(.title2)
                     .fontWeight(.semibold)
 
-                // HStack for the two bell options
-                HStack(spacing: 30) {
+                // HStack for the three bell options
+                HStack(spacing: 20) {
                     // Silent/None option
                     BellOptionButton(
                         option: .none,
@@ -76,6 +103,14 @@ struct ContentView: View {
                         isSelected: selectedBellOption == .vibrate
                     ) {
                         selectedBellOption = .vibrate
+                    }
+
+                    // Sound option
+                    BellOptionButton(
+                        option: .sound,
+                        isSelected: selectedBellOption == .sound
+                    ) {
+                        selectedBellOption = .sound
                     }
                 }
                 .padding(.bottom, 20)
@@ -200,10 +235,21 @@ struct BellOptionButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                // SF Symbol icon
-                Image(systemName: option.icon)
-                    .font(.system(size: 30))
-                    .foregroundColor(isSelected ? .blue : .gray)
+                // Icon - either SF Symbol or custom image from Assets
+                // iOS best practice: Conditional view based on icon type
+                if option.isCustomIcon {
+                    // Custom image from Assets.xcassets
+                    Image(option.iconName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(isSelected ? .blue : .gray)
+                } else {
+                    // SF Symbol
+                    Image(systemName: option.iconName)
+                        .font(.system(size: 30))
+                        .foregroundColor(isSelected ? .blue : .gray)
+                }
 
                 // Option label
                 Text(option.rawValue)
@@ -242,6 +288,10 @@ struct TimerView: View {
     // Tracks whether the timer is paused
     // iOS best practice: Use a single boolean state for play/pause toggle
     @State private var isPaused: Bool = false
+
+    // Audio player for sound playback
+    // iOS best practice: Use @State for mutable objects that affect UI
+    @State private var audioPlayer: AVAudioPlayer?
 
     // Environment value to dismiss this view (go back to ContentView)
     @Environment(\.dismiss) private var dismiss
@@ -303,11 +353,21 @@ struct TimerView: View {
                 // Timer finished - stop the timer
                 stopTimer()
 
-                // Trigger haptic feedback if vibrate option is selected
-                // iOS best practice: Use UINotificationFeedbackGenerator for completion events
-                if bellOption == .vibrate {
+                // Trigger feedback based on selected bell option
+                // iOS best practice: Different feedback types for different options
+                switch bellOption {
+                case .vibrate:
+                    // Haptic feedback
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
+
+                case .sound:
+                    // Play sound file
+                    playSound()
+
+                case .none:
+                    // No feedback
+                    break
                 }
             }
         }
@@ -325,6 +385,34 @@ struct TimerView: View {
         isPaused.toggle()  // Flip the boolean: true -> false, false -> true
         // Timer continues running but checks isPaused before decrementing
         // This is more efficient than stopping/starting timer
+    }
+
+    // Plays the completion sound
+    // iOS best practice: Use AVAudioPlayer for local audio files
+    private func playSound() {
+        guard let soundFileName = bellOption.soundFileName else { return }
+
+        // Try to find the sound file in the bundle
+        // Supports multiple audio formats (prioritizing lossless)
+        // Order: AIFF → WAV → ALAC → FLAC → MP3
+        let formats = ["aiff", "aif", "wav", "m4a", "flac", "mp3"]
+
+        for format in formats {
+            if let soundURL = Bundle.main.url(forResource: soundFileName, withExtension: format) {
+                do {
+                    // Create audio player with the sound file
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                    audioPlayer?.play()
+                    return  // Successfully loaded and playing
+                } catch {
+                    // If this format fails, try next format
+                    print("Could not play \(format) format: \(error.localizedDescription)")
+                }
+            }
+        }
+
+        // No supported format found in bundle
+        print("Sound file '\(soundFileName)' not found in any supported format")
     }
 
     // Formats remainingSeconds into MM:SS or HH:MM:SS string
