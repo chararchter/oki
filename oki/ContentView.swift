@@ -17,20 +17,20 @@ import AVFoundation  // For audio playback
 extension Color {
     // Custom background color - adapts to light/dark mode
     // Light mode: soft warm beige, Dark mode: deep navy blue
-    static let customBackground = Color("CustomBackground", bundle: nil) ?? Color(
+    static let customBackground = Color(
         light: Color(red: 0.98, green: 0.96, blue: 0.94),  // Warm beige for light mode
         dark: Color(red: 0.11, green: 0.13, blue: 0.18)    // Deep navy for dark mode
     )
 
     // Custom text color - vibrant orange (#ff7c0a)
     // Same for both light and dark modes
-    static let customText = Color("CustomText", bundle: nil) ?? Color(
+    static let customText = Color(
         red: 1.0, green: 0.486, blue: 0.039  // #ff7c0a - vibrant orange
     )
 
     // Custom accent color for icons and interactive elements - vibrant orange (#ff7c0a)
     // Same for both light and dark modes
-    static let customAccent = Color("CustomAccent", bundle: nil) ?? Color(
+    static let customAccent = Color(
         red: 1.0, green: 0.486, blue: 0.039  // #ff7c0a - vibrant orange
     )
 
