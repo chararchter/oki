@@ -77,10 +77,11 @@ struct ContentView: View {
     @State private var selectedBellOption: BellOption = .none
 
     // Dark mode state - controls color scheme preference
-    // iOS best practice: Use @State for UI preferences
+    // iOS best practice: Use @AppStorage for persistent user preferences
+    // @AppStorage automatically saves to UserDefaults and loads on app launch
     // Note: Inverted logic for light switch behavior (ON/right = light)
     // true = light mode (default), false = dark mode
-    @State private var isDarkMode: Bool = true
+    @AppStorage("isDarkMode") private var isDarkMode: Bool = true
 
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
