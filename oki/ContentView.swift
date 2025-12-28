@@ -17,7 +17,8 @@ import AVFoundation  // For audio playback
 enum BellOption: String, CaseIterable {
     case none = "None"
     case vibrate = "Vibrate"
-    case sound = "Sound"
+    case sound = "Bell"
+    case kru = "Kru"
 
     // Icon name for each option
     // Can be SF Symbol name OR custom image name from Assets
@@ -29,6 +30,8 @@ enum BellOption: String, CaseIterable {
             return "bell.fill"
         case .sound:
             return "bell-icon"  // Custom image name - add bell-icon.png to Assets.xcassets
+        case .kru:
+            return "kru-icon"   // Custom image name - add kru-icon.png to Assets.xcassets
         }
     }
 
@@ -38,8 +41,8 @@ enum BellOption: String, CaseIterable {
         switch self {
         case .none, .vibrate:
             return false  // SF Symbols
-        case .sound:
-            return true   // Custom image from Assets
+        case .sound, .kru:
+            return true   // Custom images from Assets
         }
     }
 
@@ -48,7 +51,9 @@ enum BellOption: String, CaseIterable {
     var soundFileName: String? {
         switch self {
         case .sound:
-            return "bell-sound"  // Will look for bell-sound.mp3 or bell-sound.wav
+            return "bell-sound"  // Will look for bell-sound.aiff/wav/etc
+        case .kru:
+            return "kru-sound"   // Will look for kru-sound.aiff/wav/etc
         default:
             return nil
         }
@@ -87,8 +92,9 @@ struct ContentView: View {
                     .font(.title2)
                     .fontWeight(.semibold)
 
-                // HStack for the three bell options
-                HStack(spacing: 20) {
+                // HStack for the four bell options
+                // Reduced spacing to fit all options in one row
+                HStack(spacing: 12) {
                     // Silent/None option
                     BellOptionButton(
                         option: .none,
@@ -105,12 +111,20 @@ struct ContentView: View {
                         selectedBellOption = .vibrate
                     }
 
-                    // Sound option
+                    // Bell sound option
                     BellOptionButton(
                         option: .sound,
                         isSelected: selectedBellOption == .sound
                     ) {
                         selectedBellOption = .sound
+                    }
+
+                    // Kru sound option
+                    BellOptionButton(
+                        option: .kru,
+                        isSelected: selectedBellOption == .kru
+                    ) {
+                        selectedBellOption = .kru
                     }
                 }
                 .padding(.bottom, 20)
@@ -256,7 +270,7 @@ struct BellOptionButton: View {
                     .font(.caption)
                     .foregroundColor(isSelected ? .blue : .gray)
             }
-            .frame(width: 100, height: 80)
+            .frame(width: 80, height: 80)
             .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
             .cornerRadius(10)
             .overlay(
@@ -361,8 +375,9 @@ struct TimerView: View {
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
 
-                case .sound:
-                    // Play sound file
+                case .sound, .kru:
+                    // Play sound file (works for both bell-sound and kru-sound)
+                    // The playSound() function uses bellOption.soundFileName to get the right file
                     playSound()
 
                 case .none:
