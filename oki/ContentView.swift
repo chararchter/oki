@@ -76,6 +76,11 @@ struct ContentView: View {
     // Bell option state - controls whether to vibrate when timer completes
     @State private var selectedBellOption: BellOption = .none
 
+    // Dark mode state - controls color scheme preference
+    // iOS best practice: Use @State for UI preferences
+    // true = dark mode, false = light mode (default)
+    @State private var isDarkMode: Bool = false
+
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
 
@@ -86,6 +91,34 @@ struct ContentView: View {
         NavigationStack {
             // VStack arranges views vertically (top to bottom)
             VStack(spacing: 20) {
+                // MARK: - Dark Mode Toggle
+
+                // HStack to position toggle at the top
+                HStack {
+                    Spacer()
+
+                    // Custom toggle UI using HStack with icons
+                    // iOS best practice: Use SF Symbols for mode indicators
+                    HStack(spacing: 8) {
+                        // Light mode icon
+                        Image(systemName: "sun.max.fill")
+                            .foregroundColor(isDarkMode ? .gray : .yellow)
+                            .font(.system(size: 18))
+
+                        // Toggle switch
+                        Toggle("", isOn: $isDarkMode)
+                            .labelsHidden()
+                            .tint(.blue)
+
+                        // Dark mode icon
+                        Image(systemName: "moon.fill")
+                            .foregroundColor(isDarkMode ? .blue : .gray)
+                            .font(.system(size: 18))
+                    }
+                    .padding(.trailing, 10)
+                }
+                .padding(.top, 10)
+
                 // MARK: - Starting Bell Section
 
                 Text("Starting bell")
@@ -230,10 +263,14 @@ struct ContentView: View {
                     hours: selectedHours,
                     minutes: selectedMinutes,
                     seconds: selectedSeconds,
-                    bellOption: selectedBellOption
+                    bellOption: selectedBellOption,
+                    isDarkMode: isDarkMode  // Pass dark mode state to timer view
                 )
             }
         }
+        // iOS best practice: Use .preferredColorScheme() to override system appearance
+        // This respects Apple's Dark Mode implementation
+        .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 }
 
@@ -290,6 +327,7 @@ struct TimerView: View {
     let minutes: Int
     let seconds: Int
     let bellOption: BellOption
+    let isDarkMode: Bool  // Dark mode preference from ContentView
 
     // State for the countdown
     // @State lets us modify these values as the timer counts down
@@ -346,6 +384,8 @@ struct TimerView: View {
         .onDisappear {
             stopTimer()
         }
+        // Apply same color scheme as ContentView
+        .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 
     // MARK: - Helper Functions
