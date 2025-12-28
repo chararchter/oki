@@ -10,6 +10,48 @@ import SwiftData
 import UIKit  // For haptic feedback
 import AVFoundation  // For audio playback
 
+// MARK: - Custom Color Theme
+
+// Extension to define custom colors for light and dark modes
+// iOS best practice: Use Color extensions for app-wide color schemes
+extension Color {
+    // Custom background color - adapts to light/dark mode
+    // Light mode: soft warm beige, Dark mode: deep navy blue
+    static let customBackground = Color("CustomBackground", bundle: nil) ?? Color(
+        light: Color(red: 0.98, green: 0.96, blue: 0.94),  // Warm beige for light mode
+        dark: Color(red: 0.11, green: 0.13, blue: 0.18)    // Deep navy for dark mode
+    )
+
+    // Custom text color - adapts to light/dark mode
+    // Light mode: dark brown, Dark mode: soft white
+    static let customText = Color("CustomText", bundle: nil) ?? Color(
+        light: Color(red: 0.2, green: 0.18, blue: 0.16),   // Dark brown for light mode
+        dark: Color(red: 0.95, green: 0.95, blue: 0.96)    // Soft white for dark mode
+    )
+
+    // Custom accent color for icons and interactive elements
+    // Light mode: warm orange, Dark mode: soft teal
+    static let customAccent = Color("CustomAccent", bundle: nil) ?? Color(
+        light: Color(red: 0.95, green: 0.55, blue: 0.25),  // Warm orange for light mode
+        dark: Color(red: 0.4, green: 0.75, blue: 0.75)     // Soft teal for dark mode
+    )
+
+    // Helper initializer for light/dark color variants
+    // iOS best practice: Use UIColor's dynamic color provider
+    init(light: Color, dark: Color) {
+        self.init(uiColor: UIColor(dynamicProvider: { traits in
+            switch traits.userInterfaceStyle {
+            case .light, .unspecified:
+                return UIColor(light)
+            case .dark:
+                return UIColor(dark)
+            @unknown default:
+                return UIColor(light)
+            }
+        }))
+    }
+}
+
 // MARK: - Bell Option Enum
 
 // Enum for starting bell options
@@ -105,18 +147,18 @@ struct ContentView: View {
                     HStack(spacing: 8) {
                         // Dark mode icon (left)
                         Image(systemName: "moon.fill")
-                            .foregroundColor(isDarkMode ? .gray : .blue)
+                            .foregroundColor(isDarkMode ? Color.customText.opacity(0.3) : .customAccent)
                             .font(.system(size: 18))
 
                         // Toggle switch
                         // ON (right/true) = Light mode, OFF (left/false) = Dark mode
                         Toggle("", isOn: $isDarkMode)
                             .labelsHidden()
-                            .tint(.blue)
+                            .tint(.customAccent)
 
                         // Light mode icon (right)
                         Image(systemName: "sun.max.fill")
-                            .foregroundColor(isDarkMode ? .yellow : .gray)
+                            .foregroundColor(isDarkMode ? .customAccent : Color.customText.opacity(0.3))
                             .font(.system(size: 18))
                     }
 
@@ -129,6 +171,7 @@ struct ContentView: View {
                 Text("Starting bell")
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .foregroundColor(.customText)
 
                 // HStack for the four bell options
                 // Reduced spacing to fit all options in one row
@@ -173,6 +216,7 @@ struct ContentView: View {
                 Text("Duration")
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .foregroundColor(.customText)
 
 
                 // MARK: - The Time Picker Wheels
@@ -187,7 +231,7 @@ struct ContentView: View {
                         // Label above the hours wheel
                         Text("hours")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.customText.opacity(0.6))
 
                         // Hours Picker: 0-12
                         // Could potentially increase this range but who meditates more than 12 hours?
@@ -195,6 +239,7 @@ struct ContentView: View {
                             ForEach(0...12, id: \.self) { hour in
                                 Text("\(hour)")
                                     .font(.title)
+                                    .foregroundColor(.customText)
                                     .tag(hour)
                             }
                         }
@@ -208,13 +253,14 @@ struct ContentView: View {
                         // Label above the minutes wheel
                         Text("minutes")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.customText.opacity(0.6))
 
                         // Minutes Picker: 0-59
                         Picker("Minutes", selection: $selectedMinutes) {
                             ForEach(0...59, id: \.self) { minute in
                                 Text("\(minute)")
                                     .font(.title)
+                                    .foregroundColor(.customText)
                                     .tag(minute)
                             }
                         }
@@ -228,13 +274,14 @@ struct ContentView: View {
                         // Label above the seconds wheel
                         Text("seconds")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.customText.opacity(0.6))
 
                         // Seconds Picker: 0, 10, 20, 30, 40, 50
                         Picker("Seconds", selection: $selectedSeconds) {
                             ForEach(Array(stride(from: 0, through: 50, by: 10)), id: \.self) { second in
                                 Text("\(second)")
                                     .font(.title)
+                                    .foregroundColor(.customText)
                                     .tag(second)
                             }
                         }
@@ -262,6 +309,7 @@ struct ContentView: View {
                 .padding(.top, 30)  // Add space between wheels and button
             }
             .padding()  // Adds spacing around the entire VStack
+            .background(Color.customBackground)  // Custom background color
             // NavigationDestination: When showingTimer is true, navigate to TimerView
             .navigationDestination(isPresented: $showingTimer) {
                 TimerView(
@@ -273,6 +321,7 @@ struct ContentView: View {
                 )
             }
         }
+        .background(Color.customBackground)  // Apply to NavigationStack as well
         // iOS best practice: Use .preferredColorScheme() to override system appearance
         // This respects Apple's Dark Mode implementation
         // Inverted logic: true = light mode, false = dark mode
@@ -300,25 +349,25 @@ struct BellOptionButton: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 30, height: 30)
-                        .foregroundColor(isSelected ? .blue : .gray)
+                        .foregroundColor(isSelected ? .customAccent : Color.customText.opacity(0.4))
                 } else {
                     // SF Symbol
                     Image(systemName: option.iconName)
                         .font(.system(size: 30))
-                        .foregroundColor(isSelected ? .blue : .gray)
+                        .foregroundColor(isSelected ? .customAccent : Color.customText.opacity(0.4))
                 }
 
                 // Option label
                 Text(option.rawValue)
                     .font(.caption)
-                    .foregroundColor(isSelected ? .blue : .gray)
+                    .foregroundColor(isSelected ? .customAccent : Color.customText.opacity(0.6))
             }
             .frame(width: 80, height: 80)
-            .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
+            .background(isSelected ? Color.customAccent.opacity(0.15) : Color.clear)
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+                    .stroke(isSelected ? Color.customAccent : Color.customText.opacity(0.2), lineWidth: 2)
             )
         }
     }
@@ -362,7 +411,7 @@ struct TimerView: View {
             // This updates every second as the timer counts down
             Text(formattedTime)
                 .font(.system(size: 80, weight: .bold, design: .rounded))
-                .foregroundColor(.black)
+                .foregroundColor(.customText)
                 .monospacedDigit()  // Keeps digits the same width
 
             // MARK: - Pause/Play Button
@@ -376,10 +425,12 @@ struct TimerView: View {
                     .font(.system(size: 40))
                     .foregroundColor(.white)
                     .frame(width: 80, height: 80)
-                    .background(Color.blue)
+                    .background(Color.customAccent)
                     .clipShape(Circle())
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.customBackground)
         .padding()
         .navigationBarBackButtonHidden(false)  // Show back button to return to duration picker
         // onAppear runs when this view first appears
