@@ -78,8 +78,9 @@ struct ContentView: View {
 
     // Dark mode state - controls color scheme preference
     // iOS best practice: Use @State for UI preferences
-    // true = dark mode, false = light mode (default)
-    @State private var isDarkMode: Bool = false
+    // Note: Inverted logic for light switch behavior (ON/right = light)
+    // true = light mode (default), false = dark mode
+    @State private var isDarkMode: Bool = true
 
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
@@ -99,20 +100,22 @@ struct ContentView: View {
 
                     // Custom toggle UI using HStack with icons
                     // iOS best practice: Use SF Symbols for mode indicators
+                    // Light switch behavior: ON (right) = Light mode
                     HStack(spacing: 8) {
-                        // Light mode icon
-                        Image(systemName: "sun.max.fill")
-                            .foregroundColor(isDarkMode ? .gray : .yellow)
+                        // Dark mode icon (left)
+                        Image(systemName: "moon.fill")
+                            .foregroundColor(isDarkMode ? .gray : .blue)
                             .font(.system(size: 18))
 
                         // Toggle switch
+                        // ON (right/true) = Light mode, OFF (left/false) = Dark mode
                         Toggle("", isOn: $isDarkMode)
                             .labelsHidden()
                             .tint(.blue)
 
-                        // Dark mode icon
-                        Image(systemName: "moon.fill")
-                            .foregroundColor(isDarkMode ? .blue : .gray)
+                        // Light mode icon (right)
+                        Image(systemName: "sun.max.fill")
+                            .foregroundColor(isDarkMode ? .yellow : .gray)
                             .font(.system(size: 18))
                     }
 
@@ -271,7 +274,8 @@ struct ContentView: View {
         }
         // iOS best practice: Use .preferredColorScheme() to override system appearance
         // This respects Apple's Dark Mode implementation
-        .preferredColorScheme(isDarkMode ? .dark : .light)
+        // Inverted logic: true = light mode, false = dark mode
+        .preferredColorScheme(isDarkMode ? .light : .dark)
     }
 }
 
@@ -386,7 +390,8 @@ struct TimerView: View {
             stopTimer()
         }
         // Apply same color scheme as ContentView
-        .preferredColorScheme(isDarkMode ? .dark : .light)
+        // Inverted logic: true = light mode, false = dark mode
+        .preferredColorScheme(isDarkMode ? .light : .dark)
     }
 
     // MARK: - Helper Functions
