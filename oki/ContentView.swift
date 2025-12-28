@@ -307,7 +307,6 @@ struct ContentView: View {
                 .padding(.top, 30)  // Add space between wheels and button
             }
             .padding()  // Adds spacing around the entire VStack
-            .background(Color.customBackground)  // Custom background color
             // NavigationDestination: When showingTimer is true, navigate to TimerView
             .navigationDestination(isPresented: $showingTimer) {
                 TimerView(
@@ -319,7 +318,9 @@ struct ContentView: View {
                 )
             }
         }
-        .background(Color.customBackground)  // Apply to NavigationStack as well
+        // Apply background to entire screen including safe areas
+        // iOS best practice: Use ignoresSafeArea() for full-screen backgrounds
+        .background(Color.customBackground.ignoresSafeArea())
         // iOS best practice: Use .preferredColorScheme() to override system appearance
         // This respects Apple's Dark Mode implementation
         // Inverted logic: true = light mode, false = dark mode
@@ -428,8 +429,7 @@ struct TimerView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.customBackground)
-        .padding()
+        .background(Color.customBackground.ignoresSafeArea())
         .navigationBarBackButtonHidden(false)  // Show back button to return to duration picker
         // onAppear runs when this view first appears
         .onAppear {
