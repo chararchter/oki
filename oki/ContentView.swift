@@ -374,7 +374,8 @@ struct BellOptionButton: View {
 // MARK: - Timer View
 
 // This view displays the countdown timer
-struct TimerView: View {
+// Conforms to AVAudioPlayerDelegate to detect when sound finishes playing
+struct TimerView: View, @unchecked Sendable {
     // The initial time values passed from ContentView
     let hours: Int
     let minutes: Int
@@ -397,6 +398,9 @@ struct TimerView: View {
     // Audio player for sound playback
     // iOS best practice: Use @State for mutable objects that affect UI
     @State private var audioPlayer: AVAudioPlayer?
+
+    // Coordinator to handle audio player delegate callbacks
+    @State private var audioDelegate: AudioPlayerDelegate?
 
     // Environment value to dismiss this view (go back to ContentView)
     @Environment(\.dismiss) private var dismiss
@@ -469,15 +473,20 @@ struct TimerView: View {
                     // Haptic feedback
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
+                    // Dismiss after brief delay for vibration to complete
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        dismiss()
+                    }
 
                 case .bell, .kru:
                     // Play sound file (works for both bell-sound and kru-sound)
                     // The playSound() function uses bellOption.soundFileName to get the right file
+                    // Will auto-dismiss when sound finishes via delegate
                     playSound()
 
                 case .none:
-                    // No feedback
-                    break
+                    // No feedback - dismiss immediately
+                    dismiss()
                 }
             }
         }
@@ -512,6 +521,12 @@ struct TimerView: View {
                 do {
                     // Create audio player with the sound file
                     audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+
+                    // Create delegate to handle completion and dismissal
+                    audioDelegate = AudioPlayerDelegate(onFinish: {
+                        dismiss()
+                    })
+                    audioPlayer?.delegate = audioDelegate
                     audioPlayer?.play()
                     return  // Successfully loaded and playing
                 } catch {
@@ -521,8 +536,9 @@ struct TimerView: View {
             }
         }
 
-        // No supported format found in bundle
+        // No supported format found in bundle - dismiss anyway
         print("Sound file '\(soundFileName)' not found in any supported format")
+        dismiss()
     }
 
     // Formats remainingSeconds into MM:SS or HH:MM:SS string
@@ -540,6 +556,23 @@ struct TimerView: View {
         } else {
             return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
         }
+    }
+}
+
+// MARK: - Audio Player Delegate
+
+// Delegate class to handle AVAudioPlayer completion events
+// iOS best practice: Use NSObject-based delegate for Objective-C protocols
+class AudioPlayerDelegate: NSObject, AVAudioPlayerDelegate {
+    let onFinish: () -> Void
+
+    init(onFinish: @escaping () -> Void) {
+        self.onFinish = onFinish
+    }
+
+    // Called when audio playback finishes successfully
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        onFinish()
     }
 }
 
