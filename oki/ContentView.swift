@@ -22,16 +22,16 @@ extension Color {
         dark: Color(red: 0.11, green: 0.13, blue: 0.18)    // Deep navy for dark mode
     )
 
-    // Custom text color - vibrant orange (#ff7c0a)
-    // Same for both light and dark modes
+    // Custom text color
     static let customText = Color(
-        red: 1.0, green: 0.486, blue: 0.039  // #ff7c0a - vibrant orange
+        light: Color(red: 0.55, green: 0.18, blue: 0.10),  // #8B2E1A
+        dark: Color(red: 1.0, green: 0.486, blue: 0.039)  // #ff7c0a - vibrant orange
     )
 
-    // Custom accent color for icons and interactive elements - vibrant orange (#ff7c0a)
-    // Same for both light and dark modes
+    // Custom accent color for icons and interactive elements
     static let customAccent = Color(
-        red: 1.0, green: 0.486, blue: 0.039  // #ff7c0a - vibrant orange
+        light: Color(red: 1.0, green: 0.486, blue: 0.039),  // #ff7c0a - vibrant orange
+        dark: Color(red: 1.0, green: 0.486, blue: 0.039)  // #ff7c0a - vibrant orange
     )
 
     // Helper initializer for light/dark color variants
