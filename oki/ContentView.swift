@@ -289,20 +289,19 @@ struct ContentView: View {
                     }
                 }
 
-                // MARK: - Start Button
+                // MARK: - Play Button
 
                 // NavigationLink presents the timer view when tapped
-                // We use .navigationDestination to specify where to navigate
+                // iOS best practice: Use SF Symbols for consistent icon design
                 Button(action: {
                     showingTimer = true
                 }) {
-                    Text("start")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 40))
                         .foregroundColor(.white)
-                        .frame(width: 100, height: 100)  // Makes it a large round button
-                        .background(Color.red)
-                        .clipShape(Circle())  // Makes it perfectly round
+                        .frame(width: 80, height: 80)
+                        .background(Color.customAccent)
+                        .clipShape(Circle())
                 }
                 .padding(.top, 30)  // Add space between wheels and button
             }
