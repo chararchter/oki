@@ -131,8 +131,8 @@ struct ContentView: View {
     var body: some View {
         // ZStack to ensure background fills entire screen
         ZStack {
-            // Background layer
-            Color.customBackground
+            // Background layer - directly use isDarkMode state for color selection
+            (isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063))
                 .ignoresSafeArea()
 
             // NavigationStack enables navigation to the timer view
@@ -436,7 +436,7 @@ struct TimerView: View, @unchecked Sendable {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.customBackground.ignoresSafeArea())
+        .background((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)).ignoresSafeArea())
         .navigationBarBackButtonHidden(false)  // Show back button to return to duration picker
         // onAppear runs when this view first appears
         .onAppear {
