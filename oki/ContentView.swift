@@ -129,16 +129,10 @@ struct ContentView: View {
     // MARK: - Body
 
     var body: some View {
-        // ZStack to ensure background fills entire screen
-        ZStack {
-            // Background layer - directly use isDarkMode state for color selection
-            (isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063))
-                .ignoresSafeArea()
-
-            // NavigationStack enables navigation to the timer view
-            NavigationStack {
-                // VStack arranges views vertically (top to bottom)
-                VStack(spacing: 20) {
+        // NavigationStack enables navigation to the timer view
+        NavigationStack {
+            // VStack arranges views vertically (top to bottom)
+            VStack(spacing: 20) {
                 // MARK: - Dark Mode Toggle
 
                 // HStack to center toggle at the top
@@ -322,14 +316,13 @@ struct ContentView: View {
                     isDarkMode: isDarkMode  // Pass dark mode state to timer view
                 )
             }
-            .background(Color.clear)  // Make NavigationStack transparent to show ZStack background
-            .scrollContentBackground(.hidden)  // Hide default list/scroll backgrounds
-            }
         }
         // iOS best practice: Use .preferredColorScheme() to override system appearance
         // This respects Apple's Dark Mode implementation
         // Inverted logic: true = light mode, false = dark mode
         .preferredColorScheme(isDarkMode ? .light : .dark)
+        // Apply background AFTER color scheme to override system defaults
+        .background((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)).ignoresSafeArea())
     }
 }
 
