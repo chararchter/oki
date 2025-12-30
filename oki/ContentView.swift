@@ -126,6 +126,10 @@ struct ContentView: View {
     // true = light mode (default), false = dark mode
     @AppStorage("isDarkMode") private var isDarkMode: Bool = true
 
+    // Breathing animation preference - guides meditation breath rhythm
+    // iOS best practice: Use @AppStorage for persistent user preferences
+    @AppStorage("breathingAnimationEnabled") private var breathingAnimationEnabled: Bool = true
+
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
 
@@ -166,6 +170,22 @@ struct ContentView: View {
                     Spacer()
                 }
                 .padding(.top, 10)
+
+                // MARK: - Breathing Animation Toggle
+
+                HStack {
+                    Text("Breathing circle")
+                        .font(.subheadline)
+                        .foregroundColor(.customText.opacity(0.8))
+
+                    Spacer()
+
+                    Toggle("", isOn: $breathingAnimationEnabled)
+                        .labelsHidden()
+                        .tint(.customAccent)
+                }
+                .padding(.horizontal, 40)
+                .padding(.top, 5)
 
                 // MARK: - Starting Bell Section
 
@@ -316,7 +336,8 @@ struct ContentView: View {
                     minutes: selectedMinutes,
                     seconds: selectedSeconds,
                     bellOption: selectedBellOption,
-                    isDarkMode: isDarkMode  // Pass dark mode state to timer view
+                    isDarkMode: isDarkMode,  // Pass dark mode state to timer view
+                    breathingAnimationEnabled: breathingAnimationEnabled  // Pass breathing animation preference
                 )
             }
             .containerBackground((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)), for: .navigation)
@@ -383,6 +404,7 @@ struct TimerView: View, @unchecked Sendable {
     let seconds: Int
     let bellOption: BellOption
     let isDarkMode: Bool  // Dark mode preference from ContentView
+    let breathingAnimationEnabled: Bool  // Breathing animation preference from ContentView
 
     // State for the countdown
     // @State lets us modify these values as the timer counts down
@@ -416,17 +438,19 @@ struct TimerView: View, @unchecked Sendable {
 
             // ZStack layers breathing circle behind timer
             ZStack {
-                // Breathing circle - gentle pulsing animation
+                // Breathing circle - gentle pulsing animation (if enabled)
                 // Guides meditation breath rhythm (4 sec inhale, 4 sec exhale)
-                Circle()
-                    .fill(Color.customAccent.opacity(0.12))
-                    .frame(width: 200, height: 200)
-                    .scaleEffect(breathingScale)
-                    .animation(
-                        .easeInOut(duration: 4.0)
-                            .repeatForever(autoreverses: true),
-                        value: breathingScale
-                    )
+                if breathingAnimationEnabled {
+                    Circle()
+                        .fill(Color.customAccent.opacity(0.12))
+                        .frame(width: 200, height: 200)
+                        .scaleEffect(breathingScale)
+                        .animation(
+                            .easeInOut(duration: 4.0)
+                                .repeatForever(autoreverses: true),
+                            value: breathingScale
+                        )
+                }
 
                 // Display remaining time in HH:MM:SS format
                 // This updates every second as the timer counts down
@@ -522,9 +546,12 @@ struct TimerView: View, @unchecked Sendable {
     // Starts the breathing animation
     // Gentle pulsing guides meditation breath rhythm
     private func startBreathingAnimation() {
-        // Trigger animation by changing scale
-        // Animation will auto-repeat due to .repeatForever modifier
-        breathingScale = 1.3
+        // Only start animation if enabled by user
+        if breathingAnimationEnabled {
+            // Trigger animation by changing scale
+            // Animation will auto-repeat due to .repeatForever modifier
+            breathingScale = 1.3
+        }
     }
 
     // Toggles between pause and resume states
