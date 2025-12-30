@@ -14,24 +14,27 @@ import AVFoundation  // For audio playback
 
 // Extension to define custom colors for light and dark modes
 // iOS best practice: Use Color extensions for app-wide color schemes
+// Cohesive warm, earthy palette designed for meditation and mindfulness
 extension Color {
     // Custom background color - adapts to light/dark mode
-    // Light mode: off-white, Dark mode: dark brown
+    // Light mode: warm cream, Dark mode: rich dark brown
     static let customBackground = Color(
-        light: Color(red: 0.98, green: 0.98, blue: 0.98),  // Off-white for light mode
-        dark: Color(red: 0.118, green: 0.078, blue: 0.063)  // #1E1410 - dark brown for dark mode
+        light: Color(red: 0.98, green: 0.97, blue: 0.95),  // #FAF8F2 - warm cream for light mode
+        dark: Color(red: 0.12, green: 0.08, blue: 0.06)    // #1E140F - rich dark brown for dark mode
     )
 
-    // Custom text color
+    // Custom text color - high contrast for accessibility
+    // Light mode: deep warm brown, Dark mode: soft amber glow
     static let customText = Color(
-        light: Color(red: 0.55, green: 0.18, blue: 0.10),  // #8B2E1A
-        dark: Color(red: 1.0, green: 0.486, blue: 0.039)  // #ff7c0a - vibrant orange
+        light: Color(red: 0.20, green: 0.15, blue: 0.12),  // #33261E - deep warm brown (WCAG AAA)
+        dark: Color(red: 0.96, green: 0.72, blue: 0.48)    // #F5B87A - soft amber (warm & readable)
     )
 
     // Custom accent color for icons and interactive elements
+    // Warm terracotta/amber orange tones
     static let customAccent = Color(
-        light: Color(red: 1.0, green: 0.486, blue: 0.039),  // #ff7c0a - vibrant orange
-        dark: Color(red: 1.0, green: 0.486, blue: 0.039)  // #ff7c0a - vibrant orange
+        light: Color(red: 0.87, green: 0.44, blue: 0.18),  // #DE702E - terracotta orange
+        dark: Color(red: 0.95, green: 0.58, blue: 0.26)    // #F29443 - bright amber orange
     )
 
     // Helper initializer for light/dark color variants
