@@ -15,10 +15,11 @@ import AVFoundation  // For audio playback
 // Extension to define custom colors for light and dark modes
 // iOS best practice: Use Color extensions for app-wide color schemes
 extension Color {
-    // Custom background color - consistent off-white for all screens
-    // Same color for both light and dark modes
+    // Custom background color - adapts to light/dark mode
+    // Light mode: off-white, Dark mode: deep navy
     static let customBackground = Color(
-        red: 0.98, green: 0.98, blue: 0.98  // Off-white
+        light: Color(red: 0.98, green: 0.98, blue: 0.98),  // Off-white for light mode
+        dark: Color(red: 0.11, green: 0.13, blue: 0.18)    // Deep navy for dark mode
     )
 
     // Custom text color
