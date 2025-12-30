@@ -15,10 +15,11 @@ import AVFoundation  // For audio playback
 // Extension to define custom colors for light and dark modes
 // iOS best practice: Use Color extensions for app-wide color schemes
 extension Color {
-    // Custom background color - consistent off-white for all screens
-    // Same color for both light and dark modes
+    // Custom background color - adapts to light/dark mode
+    // Light mode: off-white, Dark mode: dark brown
     static let customBackground = Color(
-        red: 0.98, green: 0.98, blue: 0.98  // Off-white
+        light: Color(red: 0.98, green: 0.98, blue: 0.98),  // Off-white for light mode
+        dark: Color(red: 0.118, green: 0.078, blue: 0.063)  // #1E1410 - dark brown for dark mode
     )
 
     // Custom text color
@@ -315,10 +316,8 @@ struct ContentView: View {
                     isDarkMode: isDarkMode  // Pass dark mode state to timer view
                 )
             }
+            .containerBackground((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)), for: .navigation)
         }
-        // Apply background to entire screen including safe areas
-        // iOS best practice: Use ignoresSafeArea() for full-screen backgrounds
-        .background(Color.customBackground.ignoresSafeArea())
         // iOS best practice: Use .preferredColorScheme() to override system appearance
         // This respects Apple's Dark Mode implementation
         // Inverted logic: true = light mode, false = dark mode
@@ -431,7 +430,7 @@ struct TimerView: View, @unchecked Sendable {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.customBackground.ignoresSafeArea())
+        .background((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)).ignoresSafeArea())
         .navigationBarBackButtonHidden(false)  // Show back button to return to duration picker
         // onAppear runs when this view first appears
         .onAppear {
