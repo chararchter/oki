@@ -403,19 +403,38 @@ struct TimerView: View, @unchecked Sendable {
     // Coordinator to handle audio player delegate callbacks
     @State private var audioDelegate: AudioPlayerDelegate?
 
+    // Breathing animation state
+    // Controls the pulsing circle size for meditation breathing guidance
+    @State private var breathingScale: CGFloat = 1.0
+
     // Environment value to dismiss this view (go back to ContentView)
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 40) {
-            // MARK: - Countdown Display
+            // MARK: - Countdown Display with Breathing Circle
 
-            // Display remaining time in HH:MM:SS format
-            // This updates every second as the timer counts down
-            Text(formattedTime)
-                .font(.system(size: 80, weight: .bold, design: .rounded))
-                .foregroundColor(.customText)
-                .monospacedDigit()  // Keeps digits the same width
+            // ZStack layers breathing circle behind timer
+            ZStack {
+                // Breathing circle - gentle pulsing animation
+                // Guides meditation breath rhythm (4 sec inhale, 4 sec exhale)
+                Circle()
+                    .fill(Color.customAccent.opacity(0.12))
+                    .frame(width: 200, height: 200)
+                    .scaleEffect(breathingScale)
+                    .animation(
+                        .easeInOut(duration: 4.0)
+                            .repeatForever(autoreverses: true),
+                        value: breathingScale
+                    )
+
+                // Display remaining time in HH:MM:SS format
+                // This updates every second as the timer counts down
+                Text(formattedTime)
+                    .font(.system(size: 80, weight: .bold, design: .rounded))
+                    .foregroundColor(.customText)
+                    .monospacedDigit()  // Keeps digits the same width
+            }
 
             // MARK: - Pause/Play Button
 
@@ -438,6 +457,7 @@ struct TimerView: View, @unchecked Sendable {
         // onAppear runs when this view first appears
         .onAppear {
             startTimer()
+            startBreathingAnimation()
         }
         // onDisappear runs when leaving this view
         .onDisappear {
@@ -497,6 +517,14 @@ struct TimerView: View, @unchecked Sendable {
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+
+    // Starts the breathing animation
+    // Gentle pulsing guides meditation breath rhythm
+    private func startBreathingAnimation() {
+        // Trigger animation by changing scale
+        // Animation will auto-repeat due to .repeatForever modifier
+        breathingScale = 1.3
     }
 
     // Toggles between pause and resume states
