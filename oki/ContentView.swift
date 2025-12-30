@@ -316,13 +316,12 @@ struct ContentView: View {
                     isDarkMode: isDarkMode  // Pass dark mode state to timer view
                 )
             }
+            .containerBackground((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)), for: .navigation)
         }
         // iOS best practice: Use .preferredColorScheme() to override system appearance
         // This respects Apple's Dark Mode implementation
         // Inverted logic: true = light mode, false = dark mode
         .preferredColorScheme(isDarkMode ? .light : .dark)
-        // Apply background AFTER color scheme to override system defaults
-        .background((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)).ignoresSafeArea())
     }
 }
 
