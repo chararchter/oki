@@ -128,7 +128,7 @@ struct ContentView: View {
 
     // Breathing animation preference - guides meditation breath rhythm
     // iOS best practice: Use @AppStorage for persistent user preferences
-    @AppStorage("breathingAnimationEnabled") private var breathingAnimationEnabled: Bool = true
+    @AppStorage("breathingAnimationEnabled") private var breathingAnimationEnabled: Bool = false
 
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
@@ -173,19 +173,32 @@ struct ContentView: View {
 
                 // MARK: - Breathing Animation Toggle
 
-                HStack {
-                    Text("Breathing circle")
-                        .font(.subheadline)
-                        .foregroundColor(.customText.opacity(0.8))
+                Text("Breathing circle")
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.customText)
 
+                // Toggle with Off/On labels
+                HStack {
                     Spacer()
 
-                    Toggle("", isOn: $breathingAnimationEnabled)
-                        .labelsHidden()
-                        .tint(.customAccent)
+                    HStack(spacing: 12) {
+                        Text("Off")
+                            .font(.subheadline)
+                            .foregroundColor(breathingAnimationEnabled ? .customText.opacity(0.5) : .customText)
+
+                        Toggle("", isOn: $breathingAnimationEnabled)
+                            .labelsHidden()
+                            .tint(.customAccent)
+
+                        Text("On")
+                            .font(.subheadline)
+                            .foregroundColor(breathingAnimationEnabled ? .customText : .customText.opacity(0.5))
+                    }
+
+                    Spacer()
                 }
-                .padding(.horizontal, 40)
-                .padding(.top, 5)
+                .padding(.bottom, 10)
 
                 // MARK: - Starting Bell Section
 
