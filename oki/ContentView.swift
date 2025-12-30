@@ -24,9 +24,9 @@ extension Color {
     )
 
     // Custom text color - high contrast for accessibility
-    // Light mode: deep warm brown, Dark mode: soft amber glow
+    // Light mode: rich chocolate brown, Dark mode: soft amber glow
     static let customText = Color(
-        light: Color(red: 0.20, green: 0.15, blue: 0.12),  // #33261E - deep warm brown (WCAG AAA)
+        light: Color(red: 0.38, green: 0.24, blue: 0.16),  // #61311A - rich chocolate brown (warm & readable)
         dark: Color(red: 0.96, green: 0.72, blue: 0.48)    // #F5B87A - soft amber (warm & readable)
     )
 
