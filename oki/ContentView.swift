@@ -322,6 +322,8 @@ struct ContentView: View {
                     isDarkMode: isDarkMode  // Pass dark mode state to timer view
                 )
             }
+            .background(Color.clear)  // Make NavigationStack transparent to show ZStack background
+            .scrollContentBackground(.hidden)  // Hide default list/scroll backgrounds
             }
         }
         // iOS best practice: Use .preferredColorScheme() to override system appearance
