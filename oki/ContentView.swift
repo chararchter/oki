@@ -344,12 +344,12 @@ struct BellOptionButton: View {
                     Image(option.iconName)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 30, height: 30)
+                        .frame(width: 40, height: 40)
                         .foregroundColor(isSelected ? .customAccent : Color.customText.opacity(0.4))
                 } else {
                     // SF Symbol
                     Image(systemName: option.iconName)
-                        .font(.system(size: 30))
+                        .font(.system(size: 35))
                         .foregroundColor(isSelected ? .customAccent : Color.customText.opacity(0.4))
                 }
 
