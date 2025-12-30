@@ -133,6 +133,9 @@ struct ContentView: View {
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
 
+    // Navigation state - controls whether we show the settings view
+    @State private var showingSettings: Bool = false
+
     // MARK: - Body
 
     var body: some View {
@@ -140,65 +143,21 @@ struct ContentView: View {
         NavigationStack {
             // VStack arranges views vertically (top to bottom)
             VStack(spacing: 20) {
-                // MARK: - Dark Mode Toggle
+                // MARK: - Settings Button
 
-                // HStack to center toggle at the top
                 HStack {
                     Spacer()
 
-                    // Custom toggle UI using HStack with icons
-                    // iOS best practice: Use SF Symbols for mode indicators
-                    // Light switch behavior: ON (right) = Light mode
-                    HStack(spacing: 8) {
-                        // Dark mode icon (left)
-                        Image(systemName: "moon.fill")
-                            .foregroundColor(isDarkMode ? Color.customText.opacity(0.3) : .customAccent)
-                            .font(.system(size: 18))
-
-                        // Toggle switch
-                        // ON (right/true) = Light mode, OFF (left/false) = Dark mode
-                        Toggle("", isOn: $isDarkMode)
-                            .labelsHidden()
-                            .tint(.customAccent)
-
-                        // Light mode icon (right)
-                        Image(systemName: "sun.max.fill")
-                            .foregroundColor(isDarkMode ? .customAccent : Color.customText.opacity(0.3))
-                            .font(.system(size: 18))
+                    Button(action: {
+                        showingSettings = true
+                    }) {
+                        Image(systemName: "gear")
+                            .font(.system(size: 24))
+                            .foregroundColor(.customAccent)
                     }
-
-                    Spacer()
+                    .padding(.trailing, 20)
+                    .padding(.top, 10)
                 }
-                .padding(.top, 10)
-
-                // MARK: - Breathing Animation Toggle
-
-                Text("Breathing circle")
-                    .font(.title)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.customText)
-
-                // Toggle with Off/On labels
-                HStack {
-                    Spacer()
-
-                    HStack(spacing: 12) {
-                        Text("Off")
-                            .font(.subheadline)
-                            .foregroundColor(breathingAnimationEnabled ? .customText.opacity(0.5) : .customText)
-
-                        Toggle("", isOn: $breathingAnimationEnabled)
-                            .labelsHidden()
-                            .tint(.customAccent)
-
-                        Text("On")
-                            .font(.subheadline)
-                            .foregroundColor(breathingAnimationEnabled ? .customText : .customText.opacity(0.5))
-                    }
-
-                    Spacer()
-                }
-                .padding(.bottom, 10)
 
                 // MARK: - Starting Bell Section
 
@@ -354,11 +313,119 @@ struct ContentView: View {
                 )
             }
             .containerBackground((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)), for: .navigation)
+            // Settings sheet
+            .sheet(isPresented: $showingSettings) {
+                SettingsView(isDarkMode: $isDarkMode, breathingAnimationEnabled: $breathingAnimationEnabled)
+            }
         }
         // iOS best practice: Use .preferredColorScheme() to override system appearance
         // This respects Apple's Dark Mode implementation
         // Inverted logic: true = light mode, false = dark mode
         .preferredColorScheme(isDarkMode ? .light : .dark)
+    }
+}
+
+// MARK: - Settings View
+
+// Settings view for app preferences
+struct SettingsView: View {
+    @Binding var isDarkMode: Bool
+    @Binding var breathingAnimationEnabled: Bool
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 30) {
+                // MARK: - Appearance Section
+
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("Appearance")
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.customText)
+
+                    Text("Choose between light and dark mode to match your meditation environment and reduce eye strain.")
+                        .font(.subheadline)
+                        .foregroundColor(.customText.opacity(0.7))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    // Light/Dark mode toggle
+                    HStack {
+                        Spacer()
+
+                        HStack(spacing: 8) {
+                            // Dark mode icon (left)
+                            Image(systemName: "moon.fill")
+                                .foregroundColor(isDarkMode ? Color.customText.opacity(0.3) : .customAccent)
+                                .font(.system(size: 18))
+
+                            // Toggle switch
+                            Toggle("", isOn: $isDarkMode)
+                                .labelsHidden()
+                                .tint(.customAccent)
+
+                            // Light mode icon (right)
+                            Image(systemName: "sun.max.fill")
+                                .foregroundColor(isDarkMode ? .customAccent : Color.customText.opacity(0.3))
+                                .font(.system(size: 18))
+                        }
+
+                        Spacer()
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+
+                Divider()
+                    .padding(.horizontal, 20)
+
+                // MARK: - Breathing Circle Section
+
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("Breathing circle")
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.customText)
+
+                    // Toggle with Off/On labels
+                    HStack {
+                        Spacer()
+
+                        HStack(spacing: 12) {
+                            Text("Off")
+                                .font(.subheadline)
+                                .foregroundColor(breathingAnimationEnabled ? .customText.opacity(0.5) : .customText)
+
+                            Toggle("", isOn: $breathingAnimationEnabled)
+                                .labelsHidden()
+                                .tint(.customAccent)
+
+                            Text("On")
+                                .font(.subheadline)
+                                .foregroundColor(breathingAnimationEnabled ? .customText : .customText.opacity(0.5))
+                        }
+
+                        Spacer()
+                    }
+                }
+                .padding(.horizontal, 20)
+
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)).ignoresSafeArea())
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .foregroundColor(.customAccent)
+                }
+            }
+            .preferredColorScheme(isDarkMode ? .light : .dark)
+        }
     }
 }
 
