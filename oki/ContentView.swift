@@ -167,7 +167,7 @@ struct ContentView: View {
                 // MARK: - Starting Bell Section
 
                 Text("Starting bell")
-                    .font(.title2)
+                    .font(.title)
                     .fontWeight(.semibold)
                     .foregroundColor(.customText)
 
@@ -212,7 +212,7 @@ struct ContentView: View {
 
                 // Title to show what we're selecting
                 Text("Duration")
-                    .font(.title2)
+                    .font(.title)
                     .fontWeight(.semibold)
                     .foregroundColor(.customText)
 
@@ -228,8 +228,8 @@ struct ContentView: View {
                     VStack(spacing: 8) {
                         // Label above the hours wheel
                         Text("hours")
-                            .font(.caption)
-                            .foregroundColor(.customText.opacity(0.6))
+                            .font(.subheadline)
+                            .foregroundColor(.customText.opacity(0.8))
 
                         // Hours Picker: 0-12
                         // Could potentially increase this range but who meditates more than 12 hours?
@@ -250,8 +250,8 @@ struct ContentView: View {
                     VStack(spacing: 8) {
                         // Label above the minutes wheel
                         Text("minutes")
-                            .font(.caption)
-                            .foregroundColor(.customText.opacity(0.6))
+                            .font(.subheadline)
+                            .foregroundColor(.customText.opacity(0.8))
 
                         // Minutes Picker: 0-59
                         Picker("Minutes", selection: $selectedMinutes) {
@@ -271,8 +271,8 @@ struct ContentView: View {
                     VStack(spacing: 8) {
                         // Label above the seconds wheel
                         Text("seconds")
-                            .font(.caption)
-                            .foregroundColor(.customText.opacity(0.6))
+                            .font(.subheadline)
+                            .foregroundColor(.customText.opacity(0.8))
 
                         // Seconds Picker: 0, 10, 20, 30, 40, 50
                         Picker("Seconds", selection: $selectedSeconds) {
@@ -355,8 +355,8 @@ struct BellOptionButton: View {
 
                 // Option label
                 Text(option.rawValue)
-                    .font(.caption)
-                    .foregroundColor(isSelected ? .customAccent : Color.customText.opacity(0.6))
+                    .font(.subheadline)
+                    .foregroundColor(isSelected ? .customAccent : Color.customText.opacity(0.8))
             }
             .frame(width: 80, height: 80)
             .background(isSelected ? Color.customAccent.opacity(0.15) : Color.clear)
