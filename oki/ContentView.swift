@@ -333,6 +333,9 @@ struct SettingsView: View {
     @Binding var breathingAnimationEnabled: Bool
     @Environment(\.dismiss) private var dismiss
 
+    // Breathing animation preview state
+    @State private var previewBreathingScale: CGFloat = 1.0
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
@@ -407,8 +410,36 @@ struct SettingsView: View {
 
                         Spacer()
                     }
+
+                    // MARK: - Breathing Animation Preview
+
+                    // Live preview of breathing animation
+                    ZStack {
+                        // Breathing circle preview - gentle pulsing animation
+                        Circle()
+                            .fill(Color.customAccent.opacity(0.12))
+                            .frame(width: 120, height: 120)
+                            .scaleEffect(previewBreathingScale)
+                            .animation(
+                                .easeInOut(duration: 4.0)
+                                    .repeatForever(autoreverses: true),
+                                value: previewBreathingScale
+                            )
+
+                        // Sample time display for context
+                        Text("05:00")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundColor(.customText.opacity(0.6))
+                            .monospacedDigit()
+                    }
+                    .frame(height: 140)
+                    .padding(.top, 10)
                 }
                 .padding(.horizontal, 20)
+                .onAppear {
+                    // Start preview animation when settings view appears
+                    previewBreathingScale = 1.3
+                }
 
                 Spacer()
             }
