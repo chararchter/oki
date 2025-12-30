@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "kru-icon.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "kru-icon.png",
+      "filename" : "kru-icon 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "kru-icon 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
