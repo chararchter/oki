@@ -126,8 +126,49 @@ struct ContentView: View {
     // true = light mode (default), false = dark mode
     @AppStorage("isDarkMode") private var isDarkMode: Bool = true
 
+    // Session counter - tracks completed meditation sessions
+    // iOS best practice: Use @AppStorage for persistent session tracking
+    @AppStorage("sessionsToday") private var sessionsToday: Int = 0
+    @AppStorage("lastSessionDate") private var lastSessionDate: String = ""
+
     // Navigation state - controls whether we show the countdown timer
     @State private var showingTimer: Bool = false
+
+    // MARK: - Computed Properties
+
+    // Current session count - resets at midnight
+    // iOS best practice: Computed property for date-dependent logic
+    private var currentSessionCount: Int {
+        let today = todayString()
+        if lastSessionDate != today {
+            // New day - reset counter
+            return 0
+        }
+        return sessionsToday
+    }
+
+    // MARK: - Helper Functions
+
+    // Returns today's date as a string (YYYY-MM-DD format)
+    private func todayString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
+    }
+
+    // Increments session counter and updates last session date
+    // Called when a meditation session completes successfully
+    private func incrementSessionCount() {
+        let today = todayString()
+        if lastSessionDate != today {
+            // New day - reset to 1
+            sessionsToday = 1
+            lastSessionDate = today
+        } else {
+            // Same day - increment
+            sessionsToday += 1
+        }
+    }
 
     // MARK: - Body
 
@@ -307,6 +348,15 @@ struct ContentView: View {
                         .clipShape(Circle())
                 }
                 .padding(.top, 30)  // Add space between wheels and button
+
+                // MARK: - Session Counter
+
+                // Displays completed sessions today
+                // Gentle encouragement without pressure
+                Text("Sessions today: \(currentSessionCount)")
+                    .font(.subheadline)
+                    .foregroundColor(.customText.opacity(0.6))
+                    .padding(.top, 20)
             }
             .padding()  // Adds spacing around the entire VStack
             // NavigationDestination: When showingTimer is true, navigate to TimerView
@@ -316,7 +366,8 @@ struct ContentView: View {
                     minutes: selectedMinutes,
                     seconds: selectedSeconds,
                     bellOption: selectedBellOption,
-                    isDarkMode: isDarkMode  // Pass dark mode state to timer view
+                    isDarkMode: isDarkMode,  // Pass dark mode state to timer view
+                    onSessionComplete: incrementSessionCount  // Callback to increment session counter
                 )
             }
             .containerBackground((isDarkMode ? Color(red: 0.98, green: 0.98, blue: 0.98) : Color(red: 0.118, green: 0.078, blue: 0.063)), for: .navigation)
@@ -383,6 +434,7 @@ struct TimerView: View, @unchecked Sendable {
     let seconds: Int
     let bellOption: BellOption
     let isDarkMode: Bool  // Dark mode preference from ContentView
+    let onSessionComplete: () -> Void  // Callback to increment session counter
 
     // State for the countdown
     // @State lets us modify these values as the timer counts down
@@ -466,6 +518,9 @@ struct TimerView: View, @unchecked Sendable {
             } else if remainingSeconds == 0 {
                 // Timer finished - stop the timer
                 stopTimer()
+
+                // Increment session counter - meditation session completed!
+                onSessionComplete()
 
                 // Trigger feedback based on selected bell option
                 // iOS best practice: Different feedback types for different options
