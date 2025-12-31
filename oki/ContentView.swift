@@ -414,8 +414,9 @@ struct SettingsView: View {
                     // MARK: - Breathing Animation Preview
 
                     // Live preview of breathing animation
-                    ZStack {
-                        // Breathing circle preview - gentle pulsing animation
+                    HStack {
+                        Spacer()
+
                         Circle()
                             .fill(Color.customAccent.opacity(0.12))
                             .frame(width: 120, height: 120)
@@ -426,18 +427,15 @@ struct SettingsView: View {
                                 value: previewBreathingScale
                             )
 
-                        // Sample time display for context
-                        Text("05:00")
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
-                            .foregroundColor(.customText.opacity(0.6))
-                            .monospacedDigit()
+                        Spacer()
                     }
-                    .frame(height: 140)
+                    .frame(height: 130)
                     .padding(.top, 10)
                 }
                 .padding(.horizontal, 20)
                 .onAppear {
                     // Start preview animation when settings view appears
+                    // Same scale as actual timer for accurate preview
                     previewBreathingScale = 1.3
                 }
 
