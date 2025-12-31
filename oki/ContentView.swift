@@ -414,29 +414,23 @@ struct SettingsView: View {
                     // MARK: - Breathing Animation Preview
 
                     // Live preview of breathing animation
-                    HStack {
-                        Spacer()
-
-                        Circle()
-                            .fill(Color.customAccent.opacity(0.12))
-                            .frame(width: 120, height: 120)
-                            .scaleEffect(previewBreathingScale)
-                            .animation(
-                                .easeInOut(duration: 4.0)
-                                    .repeatForever(autoreverses: true),
-                                value: previewBreathingScale
-                            )
-
-                        Spacer()
-                    }
-                    .frame(height: 130)
-                    .padding(.top, 10)
+                    Circle()
+                        .fill(Color.customAccent.opacity(0.12))
+                        .frame(width: 100, height: 100)
+                        .scaleEffect(previewBreathingScale)
+                        .animation(
+                            .easeInOut(duration: 4.0)
+                                .repeatForever(autoreverses: true),
+                            value: previewBreathingScale
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 15)
                 }
                 .padding(.horizontal, 20)
                 .onAppear {
                     // Start preview animation when settings view appears
-                    // Same scale as actual timer for accurate preview
-                    previewBreathingScale = 1.3
+                    // Subtle scale for calm, gentle preview (5% growth)
+                    previewBreathingScale = 1.05
                 }
 
                 Spacer()
